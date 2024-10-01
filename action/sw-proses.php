@@ -323,7 +323,7 @@ if (empty($error)){
     $result_u = $connection->query($query_u);
     if($result_u->num_rows > 0){
     $row_u = $result_u->fetch_assoc();
-    $time_out     = strtotime(''.$row_u['time_out'].' - 60 minute');
+    $time_out     = strtotime(''.$row_u['time_out'].' - 270 minute');
     $time_out     = date('H:i:s', $time_out);
 
       if($row_u['radius'] > $radius){
