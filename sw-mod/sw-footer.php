@@ -52,7 +52,7 @@ echo'
 ob_end_flush();
 echo'
 <footer class="text-muted text-center d-none" style="display:none">
-   <p>© 2022 - '.$year.' '.$site_name.' - Design By: <span id="credits"><a class="credits_a" href="https://s-widodo.com" target="_blank">S-widodo.com</a></span></p>
+   <p>© 2022 - '.$year.' '.$site_name.' - Design By: <span id="credits"><a class="credits_a" href="https://www.wilcorp.co.id/" target="_blank">www.wilcorp.co.id/</a></span></p>
 </footer>
 <!-- ///////////// Js Files ////////////////////  -->
 <!-- Jquery -->

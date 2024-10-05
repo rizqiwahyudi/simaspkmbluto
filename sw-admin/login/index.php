@@ -94,8 +94,8 @@ if(!empty($_SESSION['SESSION_USER']) && !empty($_SESSION['SESSION_ID'])){
 
 
 <footer class="text-muted text-center">
-    <small></span><span id="credits"><a class="credits" href="https://s-widodo.com" target="_blank">CMS S-widodo.com</a> - All Rights Reserveds</span>
-    <em>Version 3.2 Update Oktober 2022</em></small>
+    <small></span><span id="credits"><a class="credits" href="https://www.wilcorp.co.id/" target="_blank">PT. Wilcorp Putra Jaya</a> - All Rights Reserveds</span>
+    <em>Presensi Version 1.1</em></small>
 </footer>
 
         <script src="../sw-assets/js/jquery.min.js"></script>
