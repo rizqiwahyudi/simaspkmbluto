@@ -258,7 +258,7 @@ CREATE TABLE `sw_site` (
 --
 
 INSERT INTO `sw_site` (`site_id`, `site_url`, `site_name`, `site_company`, `site_manager`, `site_director`, `site_phone`, `site_address`, `site_description`, `site_logo`, `site_email`, `site_email_domain`, `gmail_host`, `gmail_username`, `gmail_password`, `gmail_port`) VALUES
-(1, 'http://localhost/absensi-v4-radius-oktober-2022', 'Absensi V.4 Radius', 'S widodo.com', 'Intan Permata Sari', 'S. Widodo', '083160901108', 'Jl. Zainal Bidin Labuhan Ratu gg. Harapan 1 No 18', 'Absensi V.4 Radius', 'whiteswlogowebpng.png', 'swidodo.com@gmail.com', 'info@domain.com', 'smtp.gmail.com', 'emailanda@gmail.com', 'passwordemailserver', '465');
+(1, 'http://localhost/absensi-v4-radius-oktober-2022', 'Absensi V.4 Radius', 'wilcorp.co.id', 'Ainor Rahman', 'wilcorp.co.id', '085259992164', 'Jl. Raya Prenduan Utara Pasar Suib', 'Absensi V.4 Radius', 'whiteswlogowebpng.png', 'swidodo.com@gmail.com', 'info@domain.com', 'smtp.gmail.com', 'emailanda@gmail.com', 'passwordemailserver', '465');
 
 -- --------------------------------------------------------
 
