@@ -546,6 +546,7 @@ echo'<table class="table rounded" id="swdatatable">
         <tr>
             <th scope="col" class="align-middle text-center" width="10">No</th>
             <th scope="col" class="align-middle">Tanggal</th>
+            <th scope="col" class="align-middle">Absen Apel</th>
             <th scope="col" class="align-middle">Absen Masuk</th>
             <th scope="col" class="align-middle">Absen Pulang</th>
             <th scope="col" class="align-middle hidden-sm">Status</th>
@@ -603,6 +604,7 @@ echo'<table class="table rounded" id="swdatatable">
             <th class="text-center">'.$no.'</th>
             <th scope="row">'.tgl_ind($row_absen['presence_date']).'</th>
             
+            <td><span class="badge badge-success">Test Apel</span> <span class="badge badge-danger">Telat Apel</span></td>
             <td><span class="badge badge-success">'.$row_absen['time_in'].'</span>'.$status.'</td>
 
             <td><span class="badge badge-success">'.$row_absen['time_out'].'</span> '.$status_pulang.'</td>
