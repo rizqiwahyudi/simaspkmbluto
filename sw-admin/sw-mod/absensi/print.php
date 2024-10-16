@@ -98,8 +98,8 @@ echo'
             $background = '';
             $status     = 'Tidak Hadir';
           if (date("l",mktime (0,0,0,$bulan,$d,$tahun)) == "Sunday" OR date("l",mktime (0,0,0,$bulan,$d,$tahun)) == "Saturday") {
-            $warna='white';
-            $background ='#FF0000';
+            $warna='black';
+            $background ='white';
             $status ='Libur Akhir Pekan';
             $sum++;
           }else{
@@ -378,8 +378,8 @@ echo'
             $background = '';
             $status     = 'Tidak Hadir';
           if (date("l",mktime (0,0,0,$bulan,$d,$tahun)) == "Sunday" OR date("l",mktime (0,0,0,$bulan,$d,$tahun)) == "Saturday") {
-            $warna='white';
-            $background ='#FF0000';
+            $warna='black';
+            $background ='white';
             $status ='Libur Akhir Pekan';
             $sum++;
           }else{
@@ -654,8 +654,8 @@ echo'
             $background = '';
             $status     = 'Tidak Hadir';
           if (date("l",mktime (0,0,0,$bulan,$d,$tahun)) == "Sunday" OR date("l",mktime (0,0,0,$bulan,$d,$tahun)) == "Saturday") {
-            $warna='white';
-            $background ='#FF0000';
+            $warna='black';
+            $background ='white';
             $status ='Libur Akhir Pekan';
             $sum++;
           }else{

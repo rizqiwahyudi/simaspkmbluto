@@ -55,8 +55,8 @@ echo'
             $background = '';
             $status_hadir     = 'Tidak Hadir';
       if (date("l",mktime (0,0,0,$bulan,$d,$tahun)) == "Sunday" OR date("l",mktime (0,0,0,$bulan,$d,$tahun)) == "Saturday") {
-            $warna='#ffffff';
-            $background ='#FF0000';
+            $warna='black';
+            $background ='white';
             $status_hadir ='Libur Akhir Pekan';
             $sum++;
       }
