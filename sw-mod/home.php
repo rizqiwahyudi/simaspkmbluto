@@ -133,7 +133,20 @@ if(!isset($_COOKIE['COOKIES_MEMBER'])){
 
     <!-- Label Absensi Hari ini -->
     <div class="section">
-        <div class="row mt-2">';
+        <div class="row mt-2">
+                <div class="col-6 mb-2">
+                    <a href="./absent"><div class="stat-box bg-danger">
+                        <div class="title text-white">Absen Apel</div>
+                        <div class="value text-white">Belum absen</div>
+                    </div></a>
+                </div>
+                <div class="col-6 mb-2">
+                    <a href="./absent"><div class="stat-box bg-info">
+                        <div class="title text-white">Laporan Kerja</div>
+                        <div class="value text-white">Belum ada laporan</div>
+                    </div></a>
+                </div>
+        ';
             if($result_absent->num_rows > 0){
                 $row_absent     = $result_absent->fetch_assoc();
                 echo'
