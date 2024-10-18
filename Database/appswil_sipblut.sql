@@ -33,12 +33,19 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `apel` (
-    `apel_id` int(11) NOT NULL,
+    `apel_id` int(11) NOT NULL AUTO_INCREMENT,
     `employees_id` int(11) NOT NULL,
     `apel_date` date NOT NULL,
     `time_in` time NOT NULL,
     `status` varchar(100) NOT NULL,
-    `latlng` varchar(100) NOT NULL
+    `latlng` varchar(100) NOT NULL,
+    PRIMARY KEY (`apel_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = latin1;
+
+CREATE TABLE `jam_apel` (
+    `jam_apel_id` int(11) NOT NULL AUTO_INCREMENT,
+    `time_in` time NOT NULL,
+    PRIMARY KEY (`jam_apel_id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = latin1;
 
 -- --------------------------------------------------------
@@ -2293,11 +2300,6 @@ VALUES (1, 'Administrator'),
 --
 -- Indexes for dumped tables
 --
-
---
--- Indexes for table `apel`
---
-ALTER TABLE `apel` ADD PRIMARY KEY (`apel_id`);
 
 --
 -- Indexes for table `building`

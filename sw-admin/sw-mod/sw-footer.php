@@ -17,7 +17,7 @@ echo'
     <div class="pull-right hidden-xs">Theme LTE / 
       '.convert(memory_get_usage()).'
     </div>
-     &copy; 2022 - '.DATE('Y').' '.$site_name.' | Design With <i class="fa fa-heart"></i> From <a class="credits" href="https://www.wilcorp.co.id/" id="credits" title="www.wilcorp.co.id">PT. Wilcorp Putra Jaya</a> - All Rights Reserved
+     &copy; 2022 - '.DATE('Y').' '.$site_name.' | Design With <i class="fa fa-heart"></i> From <a class="credits" href="https://www.wilcorp.co.id/" id="credits" title="www.wilcorp.co.id"></a> - All Rights Reserved
   </footer>
 </div>
 <!-- wrapper -->
@@ -38,7 +38,7 @@ echo'
 <script src="./sw-assets/js/validasi/messages_id.js"></script>
 <script src="../sw-mod/sw-assets/js/plugins/html5-qrcode/minified/html5-qrcode.min.js"></script>';
 
-if($mod =='shift' OR $mod=='libur'){echo'
+if($mod =='shift' OR $mod=='libur' OR $mod=='jam-apel'){echo'
 <script src="./sw-assets/plugins/datepicker/bootstrap-datepicker.js"></script>
 <script src="./sw-assets/plugins/timepicker/bootstrap-timepicker.min.js"></script>';
 }
