@@ -17,7 +17,7 @@ echo'<aside class="main-sidebar">
       if($mod =='scan-absen'){echo'<li class="active">'; }else{echo'<li>';}
       echo'<a href="./scan-absen"><i class="fa fa-qrcode"></i><span>Scan Absen</span></a></li>';
       
-      if($mod =='karyawan' OR $mod=='jabatan' OR $mod=='shift' OR $mod=='lokasi' OR $mod=='thema-card' OR $mod=='libur'){echo'<li class="active treeview">'; }else{
+      if($mod =='karyawan' OR $mod=='jabatan' OR $mod=='shift' OR $mod=='lokasi' OR $mod=='thema-card' OR $mod=='libur' OR $mod=='jam-apel'){echo'<li class="active treeview">'; }else{
       echo'<li class="treeview">';}
       echo'
           <a href="#">
@@ -33,6 +33,8 @@ echo'<aside class="main-sidebar">
              echo'<a href="./jabatan"><i class="fa fa-circle-o"></i> Data Jabatan</a></li>';
             if($mod =='shift'){echo'<li class="active">'; }else{echo'<li>';}
              echo'<a href="shift"><i class="fa fa-circle-o"></i> Data Jam Kerja</a></li>';
+            if($mod =='jam-apel'){echo'<li class="active">'; }else{echo'<li>';}
+             echo'<a href="jam-apel"><i class="fa fa-circle-o"></i> Jam Apel</a></li>';
             if($mod =='lokasi'){echo'<li class="active">'; }else{echo'<li>';}
              echo'<a href="./lokasi"><i class="fa fa-circle-o"></i> Data Lokasi</a></li>';
             if($mod =='libur'){echo'<li class="active">'; }else{echo'<li>';}
