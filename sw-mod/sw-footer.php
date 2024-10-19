@@ -105,9 +105,10 @@ var getCanvas; // global variable
 <?PHP }
 echo'
 <script src="'.$base_url.'sw-mod/sw-assets/js/sw-script.js"></script>';
-if ($mod =='absent'){?>
+if ($mod =='absent' OR $mod =='absent-apel'){?>
 <script src="https://npmcdn.com/leaflet@0.7.7/dist/leaflet.js"></script>
 <script type="text/javascript">
+    var mod = '<?php echo $mod; ?>';
     var latitude_building =L.latLng(<?php echo $row_building['latitude_longtitude'];?>);
     navigator.geolocation.getCurrentPosition(function(location) {
     var latlng = new L.LatLng(location.coords.latitude, location.coords.longitude);
@@ -134,7 +135,51 @@ if ($mod =='absent'){?>
             console.log('jarak: '+jarak);
         }
 
-        eval(function(m,c,h){function z(i){return(i< 62?'':z(parseInt(i/62)))+((i=i%62)>35?String.fromCharCode(i+29):i.toString(36))}for(var i=0;i< m.length;i++)h[z(i)]=m[i];function d(w){return h[w]?h[w]:w;};return c.replace(/\b\w+\b/g,d);}('||var|html5QrcodeScanner|new|Html5QrcodeScanner|reader|fps|10|qrbox|280|facingMode|environment|function|onScanSuccess|document|getElementById|my_audio|play|latitude|html|qrcode|radius|jarak|ajax|type|POST|url|sw|proses|action|absent|data|success|split|results2||||||if|swal|title|Berhasil|text|icon|timer|2000|setTimeout|location|href|2500|clear|else|Oops|error|render'.split('|'),'2 3=4 5("6",{7:8,9:a,b:"c"});d e(A,B){f.g("h").i();2 C=$(\'.j\').k();2 D=\'l=\'+A+\'&j=\'+C+\'&m=\'+n+\'\';$.o({p:"q",r:"./s-t?u=v",w:D,x:d (w){2 E=w.y("/");$E=E[0];$z=E[1];F($E==\'x\'){G({H:\'I!\',J:$z,K:\'x\',L:M,});N("O.P = \'./\';",Q);3.R();}S {G({H:\'T!\',J:w,K:\'U\',L:M,});}}});}3.V(e);',{}));
+        // eval(function(m,c,h){function z(i){return(i< 62?'':z(parseInt(i/62)))+((i=i%62)>35?String.fromCharCode(i+29):i.toString(36))}for(var i=0;i< m.length;i++)h[z(i)]=m[i];function d(w){return h[w]?h[w]:w;};return c.replace(/\b\w+\b/g,d);}('||var|html5QrcodeScanner|new|Html5QrcodeScanner|reader|fps|10|qrbox|280|facingMode|environment|function|onScanSuccess|document|getElementById|my_audio|play|latitude|html|qrcode|radius|jarak|ajax|type|POST|url|sw|proses|action|absent|data|success|split|results2||||||if|swal|title|Berhasil|text|icon|timer|2000|setTimeout|location|href|2500|clear|else|Oops|error|render'.split('|'),'2 3=4 5("6",{7:8,9:a,b:"c"});d e(A,B){f.g("h").i();2 C=$(\'.j\').k();2 D=\'l=\'+A+\'&j=\'+C+\'&m=\'+n+\'\';$.o({p:"q",r:"./s-t?u=v",w:D,x:d (w){2 E=w.y("/");$E=E[0];$z=E[1];F($E==\'x\'){G({H:\'I!\',J:$z,K:\'x\',L:M,});N("O.P = \'./\';",Q);3.R();}S {G({H:\'T!\',J:w,K:\'U\',L:M,});}}});}3.V(e);',{}));
+
+        var html5QrcodeScanner = new Html5QrcodeScanner("reader", {
+            fps: 10,
+            qrbox: 280,
+            facingMode: "environment"
+        });
+
+        function onScanSuccess(A, B) {
+            var url = './sw-proses?action=absent';
+            if (mod == 'absent-apel') {
+                url = './sw-proses?action=absent-apel';
+            }
+            document.getElementById("my_audio").play();
+            var C = $('.latitude').html();
+            var D = 'qrcode=' + A + '&latitude=' + C + '&radius=' + jarak + '';
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: D,
+                success: function(data) {
+                    var E = data.split("/");
+                    $E = E[0];
+                    $results2 = E[1];
+                    if ($E == 'success') {
+                        swal({
+                            title: 'Berhasil!',
+                            text: $results2,
+                            icon: 'success',
+                            timer: 2000,
+                        });
+                        setTimeout("location.href = './';", 2500);
+                        html5QrcodeScanner.clear();
+                    } else {
+                        swal({
+                            title: 'Oops!',
+                            text: data,
+                            icon: 'error',
+                            timer: 2000,
+                        });
+                    }
+                }
+            });
+        }
+        html5QrcodeScanner.render(onScanSuccess);
 
     });
 

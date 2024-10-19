@@ -21,6 +21,9 @@
     require_once'sw-mod/out/sw-cookies.php';
     $query_absent   ="SELECT employees_id,time_in,time_out FROM presence WHERE employees_id='$row_user[id]' AND presence_date='$date'";
     $result_absent  = $connection->query($query_absent);
+
+    $query_absent_apel   ="SELECT employees_id,time_in FROM apel WHERE employees_id='$row_user[id]' AND apel_date='$date'";
+    $result_absent_apel  = $connection->query($query_absent_apel);
    // $row_absent     = $result_absent->fetch_assoc();
 
     $query_shift = "SELECT employees.id, shift.time_in, shift.time_out FROM employees
