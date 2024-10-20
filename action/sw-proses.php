@@ -389,6 +389,96 @@ if (empty($error)){
           echo $values;
         }
 }
+
+// ------------- Absen Apel -------------*/
+break;
+case 'absent-apel':
+$error = array();
+
+if (empty($_POST['qrcode'])) {
+      $error[] = 'QR Code tidak boleh kosong';
+    } else {
+      $qrcode= mysqli_real_escape_string($connection, $_POST['qrcode']);
+}
+
+if (empty($_POST['latitude'])) {
+      $error[] = 'Lokasi tidak boleh kosong';
+    } else {
+      $latitude= mysqli_real_escape_string($connection, $_POST['latitude']);
+}
+
+if (empty($_POST['radius'])) {
+      $error[] = 'Jarak Lokasi tidak ditemukan!';
+    } else {
+      $radius = strip_tags($_POST['radius']);
+}
+
+if (empty($error)){  
+    // Cek User yang sudah login -----------------------------------------------
+    $query_u="SELECT employees.id,employees.employees_code,employees.employees_name,building.radius FROM employees,building WHERE employees.building_id=building.building_id AND employees.id='$row_user[id]' AND employees.employees_code='$qrcode'";
+    $result_u = $connection->query($query_u);
+    if($result_u->num_rows > 0){
+    $row_u = $result_u->fetch_assoc();
+
+      if($row_u['radius'] > $radius){
+        // Cek data Absen Berdasarkan tanggal sekarang
+        $query  ="SELECT employees_id,time_in FROM apel WHERE employees_id='$row_u[id]' AND apel_date='$date'";
+        $result = $connection->query($query);
+        if($result->num_rows > 0){
+          $row = $result->fetch_assoc();
+
+          echo'Sebelumnya "'.$row_user['employees_name'].'" sudah pernah Absen Apel pada Tanggal '.tanggal_ind($date).' dan Jam '.$row['time_in'].'.!';
+          // Update Absensi Pulang
+          // if($time_out < $time){
+          //     if($row['time_out']=='00:00:00'){
+          //         //Update Jam Pulang
+          //         $update ="UPDATE presence SET time_out='$time',latitude_longtitude_out='$latitude' WHERE employees_id='$row_u[id]' AND presence_date='$date'";
+          //         if($connection->query($update) === false) { 
+          //             die($connection->error.__LINE__); 
+          //             echo'Sepetinya sitem kami sedang error!';
+          //         } else{
+          //             //Jam Pulang
+          //             echo'success/Selamat "'.$row_user['employees_name'].'" berhasil Absen Pulang pada Tanggal '.tanggal_ind($date).' dan Jam : '.$time.', Hati-hati dijalan saat pulang "'.$row_user['employees_name'].'".!';
+          //         }
+          //     }
+          //     else{
+          //       echo'Sebelumnya "'.$row_user['employees_name'].'" sudah pernah Absen Pulang pada Tanggal '.tanggal_ind($date).' dan Jam '.$row['time_out'].'.!';
+          //   }
+          // }else{
+          //   echo'Absen pulang belum diperbolehkan "'.$row_user['employees_name'].'", Absen pulang aktif 60 menit sebelum jam pulang.!';
+          // }
+        // Else Absen Mmasuk
+        }else{
+            $add ="INSERT INTO apel (employees_id,
+                              apel_date,
+                              time_in,
+                              `status`,
+                              latlng) values('$row_u[id]',
+                              '$date',
+                              '$time',
+                              '1', /*hadir*/
+                              '$latitude')";
+                    
+            if($connection->query($add) === false) { 
+                die($connection->error.__LINE__); 
+                echo'Sepertinya Sistem Kami sedang error!';
+            } else{
+                echo'success/Selamat Anda berhasil Absen Apel pada Tanggal '.tanggal_ind($date).' dan Jam : '.$time.', Semangat bekerja "'.$row_user['employees_name'].'" !';
+            }}
+          }else{
+        echo'Posisi Anda saat ini di radius '.$radius.'M, tidak ditempat atau Jauh dari Radius..!';
+        }
+      }
+      else{
+        // Jika user tidak ditemukan
+        echo'QR CODE atau User tidak ditemukan'; 
+      }
+    }
+    else{
+      foreach ($error as $key => $values) {            
+          echo $values;
+        }
+}
  
 
 
