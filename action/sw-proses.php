@@ -625,10 +625,10 @@ if(isset($_POST['from']) OR isset($_POST['to'])){
       $from = date('Y-m-d', strtotime($_POST['from']));
       $to   = date('Y-m-d', strtotime($_POST['to']));
 
-      $filter ="presence_date BETWEEN '$from' AND '$to'";
+      $filter ="presence.presence_date BETWEEN '$from' AND '$to'";
   } 
   else{
-      $filter ="MONTH(presence_date) ='$month'";
+      $filter ="MONTH(presence.presence_date) ='$month'";
 }
 
 echo'<table class="table rounded" id="swdatatable">
@@ -648,12 +648,65 @@ echo'<table class="table rounded" id="swdatatable">
     $query_shift ="SELECT time_in,time_out FROM shift WHERE shift_id='$row_user[shift_id]'";
     $result_shift = $connection->query($query_shift);
     $row_shift = $result_shift->fetch_assoc();
+    
+    $query_jam_apel ="SELECT time_in FROM jam_apel LIMIT 1";
+    $result_jam_apel = $connection->query($query_jam_apel);
+    $row_jam_apel = $result_jam_apel->fetch_assoc();
+
     $shift_time_in  = $row_shift['time_in'];
     $shift_time_out = $row_shift['time_out'];
+    $jam_apel_time_in = $row_jam_apel['time_in'];
     $newtimestamp   = strtotime(''.$shift_time_in.' + 05 minute');
     $newtimestamp   = date('H:i:s', $newtimestamp);
 
-    $query_absen ="SELECT presence_id,presence_date,time_in,time_out,present_id, latitude_longtitude_in, latitude_longtitude_out,information,TIMEDIFF(TIME(time_in),'$shift_time_in') AS selisih,if (time_in>'$shift_time_in','Telat',if(time_in='00:00:00','Tidak Masuk','Tepat Waktu')) AS status, if (time_out<'$shift_time_out','Pulang Cepat','Tepat Waktu') AS status_pulang FROM presence WHERE employees_id='$row_user[id]' AND $filter ORDER BY presence_id DESC";
+    // $query_absen ="SELECT presence_id,presence_date,time_in,time_out,present_id, latitude_longtitude_in, latitude_longtitude_out,information,TIMEDIFF(TIME(time_in),'$shift_time_in') AS selisih,if (time_in>'$shift_time_in','Telat',if(time_in='00:00:00','Tidak Masuk','Tepat Waktu')) AS status, if (time_out<'$shift_time_out','Pulang Cepat','Tepat Waktu') AS status_pulang FROM presence WHERE employees_id='$row_user[id]' AND $filter ORDER BY presence_id DESC";
+    $query_absen ="SELECT 
+    presence.presence_id AS presence_id,
+    presence.presence_date AS presence_date,
+    presence.time_in AS time_in,
+    presence.time_out AS time_out,
+    presence.present_id AS present_id,
+    presence.latitude_longtitude_in AS latitude_longtitude_in,
+    presence.latitude_longtitude_out AS latitude_longtitude_out,
+    presence.information,
+    apel.apel_date AS apel_date,
+    apel.time_in AS apel_in,
+    TIMEDIFF(TIME(presence.time_in), '$shift_time_in') AS selisih,
+    IF(
+        presence.time_in > '$shift_time_in',
+        'Telat', 
+        IF(
+            presence.time_in = '00:00:00', 
+            'Tidak Masuk', 
+            'Tepat Waktu'
+        )
+    ) AS status,
+    IF(
+        presence.time_out < '$shift_time_out', 
+        'Pulang Cepat', 
+        'Tepat Waktu'
+    ) AS status_pulang,
+    IF(
+        apel.time_in > '$jam_apel_time_in',
+        'Telat',
+        IF(
+            apel.time_in = '00:00:00',
+            'Tidak Apel',
+            'Tepat Waktu'
+        )
+    ) AS status_apel
+FROM 
+    presence
+LEFT JOIN
+    apel
+ON
+    apel.employees_id = presence.employees_id 
+    AND apel.apel_date = presence.presence_date
+WHERE 
+    presence.employees_id = '$row_user[id]' 
+    AND $filter
+ORDER BY 
+    presence.presence_id DESC";
     $result_absen = $connection->query($query_absen);
     if($result_absen->num_rows > 0){
         while ($row_absen = $result_absen->fetch_assoc()) {
@@ -678,6 +731,16 @@ echo'<table class="table rounded" id="swdatatable">
           $status='<span class="badge badge-danger">'.$row_absen['status'].'</span>';
         }
 
+      if($row_absen['status_apel']=='Telat'){
+          $status_apel=' <span class="badge badge-danger">'.$row_absen['status_apel'].'</span>';
+        }
+        elseif ($row_absen['status_apel']='Tepat Waktu') {
+          $status_apel='<span class="badge badge-success">'.$row_absen['status_apel'].'</span>';
+        }
+        else{
+          $status_apel='<span class="badge badge-danger">'.$row_absen['status_apel'].'</span>';
+        }
+
         if($row_absen['status_pulang']=='Pulang Cepat'){
           if(!$row_absen['time_out']=='00:00:00'){
             $status_pulang='<span class="badge badge-danger">'.$row_absen['status_pulang'].'</span>';
@@ -694,7 +757,7 @@ echo'<table class="table rounded" id="swdatatable">
             <th class="text-center">'.$no.'</th>
             <th scope="row">'.tgl_ind($row_absen['presence_date']).'</th>
             
-            <td><span class="badge badge-success">Test Apel</span> <span class="badge badge-danger">Telat Apel</span></td>
+            <td><span class="badge badge-success">'.$row_absen['apel_in'].'</span>'.$status_apel.'</td>
             <td><span class="badge badge-success">'.$row_absen['time_in'].'</span>'.$status.'</td>
 
             <td><span class="badge badge-success">'.$row_absen['time_out'].'</span> '.$status_pulang.'</td>
