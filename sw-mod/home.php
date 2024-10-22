@@ -247,18 +247,21 @@ if(!isset($_COOKIE['COOKIES_MEMBER'])){
                         <thead>
                             <tr>
                                 <th scope="col">Tanggal</th>
+                                <th scope="col">Jam Apel</th>
                                 <th scope="col">Jam Masuk</th>
                                 <th scope="col">Jam Pulang</th>
                             </tr>
                         </thead>
                         <tbody>';
-                        $query_absen="SELECT presence_date,time_in,time_out FROM presence WHERE YEARWEEK(presence_date)=YEARWEEK(NOW()) AND employees_id='$row_user[id]' ORDER BY presence_id DESC LIMIT 6";
+                        // $query_absen="SELECT presence_date,time_in,time_out FROM presence WHERE YEARWEEK(presence_date)=YEARWEEK(NOW()) AND employees_id='$row_user[id]' ORDER BY presence_id DESC LIMIT 6";
+                        $query_absen="SELECT apel.apel_date AS apel_date,apel.time_in AS apel_in,presence.presence_date AS presence_date,presence.time_in AS time_in,presence.time_out AS time_out,presence.presence_id AS presence_id FROM presence LEFT JOIN apel ON apel.employees_id=presence.employees_id AND apel.apel_date=presence.presence_date WHERE YEARWEEK(presence.presence_date)=YEARWEEK(NOW()) AND presence.employees_id='$row_user[id]' ORDER BY presence.presence_id DESC LIMIT 6";
                         $result_absen = $connection->query($query_absen);
                         if($result_absen->num_rows > 0){
                             while ($row_absen= $result_absen->fetch_assoc()) {
                             echo'
                             <tr>
                                 <th scope="row">'.tgl_ind($row_absen['presence_date']).'</th>
+                                <td>'.$row_absen['apel_in'].'</td>
                                 <td>'.$row_absen['time_in'].'</td>
                                 <td>'.$row_absen['time_out'].'</td>
                             </tr>';
