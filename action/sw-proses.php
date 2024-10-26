@@ -671,6 +671,7 @@ echo'<table class="table rounded" id="swdatatable">
     presence.information,
     apel.apel_date AS apel_date,
     apel.time_in AS apel_in,
+    apel.apel_id AS apel_id,
     TIMEDIFF(TIME(presence.time_in), '$shift_time_in') AS selisih,
     IF(
         presence.time_in > '$shift_time_in',
@@ -764,7 +765,7 @@ ORDER BY
 
             <td class="hidden-sm">'.$row_aa['present_name'].''.$information.'</td>
             <td class="text-center">
-              <button type="button" class="btn btn-success btn-sm modal-update" data-id="'.$row_absen['presence_id'].'" data-masuk="'.$row_absen['time_in'].'" data-pulang="'.$row_absen['time_out'].'" data-date="'.tgl_indo($row_absen['presence_date']).'" data-information="'.$row_absen['information'].'" data-status="'.$row_absen['present_id'].'" data-toggle="modal" data-target="#modal-show"><i class="fas fa-pencil-alt"></i></button>
+              <button type="button" class="btn btn-success btn-sm modal-update" data-id="'.$row_absen['presence_id'].'" data-apel-id="'.$row_absen['apel_id'].'" data-masuk="'.$row_absen['time_in'].'" data-pulang="'.$row_absen['time_out'].'" data-date="'.tgl_indo($row_absen['presence_date']).'" data-information="'.$row_absen['information'].'" data-status="'.$row_absen['present_id'].'" data-toggle="modal" data-target="#modal-show"><i class="fas fa-pencil-alt"></i></button>
             </td>
         </tr>';
     }}
@@ -819,10 +820,17 @@ echo'
 break;
 case 'update-history':
   $error = array();
+  
   if (empty($_POST['presence_id'])) {
       $error[] = 'tidak boleh kosong';
     } else {
       $presence_id = mysqli_real_escape_string($connection, $_POST['presence_id']);
+  }
+
+  if (empty($_POST['apel_id'])) {
+      $error[] = 'tidak boleh kosong';
+    } else {
+      $apel_id = mysqli_real_escape_string($connection, $_POST['apel_id']);
   }
 
   if (empty($_POST['present_id'])) {
@@ -836,7 +844,10 @@ case 'update-history':
   if (empty($error)) { 
     $update="UPDATE presence SET present_id='$present_id',
                     information='$information' WHERE presence_id='$presence_id' AND employees_id='$row_user[id]'"; 
-    if($connection->query($update) === false) { 
+
+    $update_apel="UPDATE apel SET `status`='$present_id' WHERE apel_id='$apel_id' AND employees_id='$row_user[id]'"; 
+
+    if($connection->query($update) === false OR $connection->query($update_apel) === false) { 
         die($connection->error.__LINE__); 
         echo'Data tidak berhasil disimpan!';
     } else{

@@ -177,12 +177,31 @@ echo'
                 <tr>
                   <th style="width: 10px" class="text-center">No.</th>
                   <th>Nama</th>
+                  <th>Jam Apel</th>
                   <th>Jam Masuk</th>
                   <th>Jam Pulang</th>
                   <th class="text-right">Aksi</th>
                 </tr>
                 <tr>';
-                $query_absent_day ="SELECT presence.employees_id,presence.time_in,presence.time_out,employees.employees_name FROM presence,employees WHERE presence.employees_id=employees.id AND presence.presence_date='$date' ORDER BY presence.presence_id LIMIT 10";
+                // $query_absent_day ="SELECT presence.employees_id,presence.time_in,presence.time_out,employees.employees_name FROM presence,employees WHERE presence.employees_id=employees.id AND presence.presence_date='$date' ORDER BY presence.presence_id LIMIT 10";
+                $query_absent_day ="SELECT 
+    presence.employees_id AS employees_id,
+    presence.time_in AS time_in,
+    presence.time_out AS time_out,
+    employees.employees_name AS employees_name,
+    apel.time_in AS apel_in
+FROM 
+    presence
+JOIN 
+    employees ON presence.employees_id = employees.id
+LEFT JOIN 
+    apel ON apel.employees_id = presence.employees_id 
+    AND apel.apel_date = presence.presence_date
+WHERE 
+    presence.presence_date = '$date'
+ORDER BY 
+    presence.presence_id 
+LIMIT 10";
                 $result_absent_day = $connection->query($query_absent_day);
                 if($result_absent_day->num_rows > 0){
                 $no=0;
@@ -191,6 +210,7 @@ echo'
                   echo'
                   <td class="text-center">'.$no.'</td>
                   <td>'.$row['employees_name'].'</td>
+                  <td>'.$row['apel_in'].'</td>
                   <td>'.$row['time_in'].'</td>
                   <td>'.$row['time_out'].'</td>
                   <td class="text-right"><a href="absensi&op=views&id='.epm_encode($row['employees_id']).'" class="btn btn-warning btn-xs"><i class="fa fa-external-link-square" aria-hidden="true"></i></a></td>

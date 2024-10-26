@@ -26,8 +26,8 @@ $(document).ready(function () {
         [25, 30, 50, -1],
         [25, 30, 50, "All"],
       ],
-      sAjaxSource: "sw-mod/absensi/sw-datatable.php",
-      aoColumns: [null, null, null, null, null, null, null, null, null],
+      sAjaxSource: "sw-mod/apel/sw-datatable.php",
+      aoColumns: [null, null, null, null, null, null, null, null],
     });
   }
 
@@ -37,7 +37,7 @@ $(document).ready(function () {
   function loadData() {
     var id = $(".id").val();
     $.ajax({
-      url: "sw-mod/absensi/proses.php?action=absensi&id=" + id + "",
+      url: "sw-mod/apel/proses.php?action=absensi&id=" + id + "",
       type: "POST",
       success: function (data) {
         $(".loaddata").html(data);
@@ -76,7 +76,7 @@ $(document).ready(function () {
     $(".result-month").html(n);
 
     $.ajax({
-      url: "sw-mod/absensi/proses.php?action=absensi&id=" + id + "",
+      url: "sw-mod/apel/proses.php?action=absensi&id=" + id + "",
       method: "POST",
       data: { month: month, year: year },
       dataType: "text",
@@ -107,10 +107,10 @@ $(document).ready(function () {
     if (type == "pdf") {
       // cek berdasarkan bulan
       if (month == "") {
-        var url = "./absensi/print?action=pdfid=" + id + "";
+        var url = "./apel/print?action=pdfid=" + id + "";
       } else {
         var url =
-          "./absensi/print?action=pdf&id=" +
+          "./apel/print?action=pdf&id=" +
           id +
           "&from=" +
           month +
@@ -122,10 +122,10 @@ $(document).ready(function () {
 
     if (type == "excel") {
       if (month == "") {
-        var url = "./absensi/print?action=excel&id=" + id + "";
+        var url = "./apel/print?action=excel&id=" + id + "";
       } else {
         var url =
-          "./absensi/print?action=excel&id=" +
+          "./apel/print?action=excel&id=" +
           id +
           "&from=" +
           month +
@@ -137,10 +137,10 @@ $(document).ready(function () {
 
     if (type == "print") {
       if (month == "") {
-        var url = "./absensi/print?action=excel&id=" + id + "&print=print";
+        var url = "./apel/print?action=excel&id=" + id + "&print=print";
       } else {
         var url =
-          "./absensi/print?action=excel&id=" +
+          "./apel/print?action=excel&id=" +
           id +
           "&from=" +
           month +
@@ -159,7 +159,7 @@ $(document).ready(function () {
     var type = $(".type").val();
     if (type == "excel") {
       var url =
-        "./absensi/print?action=allexcel&pegawai=" +
+        "./apel/print?action=allexcel&pegawai=" +
         pegawai +
         "&from=" +
         month +
@@ -169,7 +169,7 @@ $(document).ready(function () {
     }
     if (type == "print") {
       var url =
-        "./absensi/print?action=allexcel&pegawai=" +
+        "./apel/print?action=allexcel&pegawai=" +
         pegawai +
         "&from=" +
         month +
@@ -177,7 +177,6 @@ $(document).ready(function () {
         year +
         "&print=print";
     }
-
     window.open(url, "_blank");
   });
 });
@@ -189,7 +188,7 @@ $(document).on("click", ".btn-modal", function () {
   var name = $(".employees_name").html();
   $(".modal-title-name").html(name);
   document.getElementById("iframe-map").innerHTML =
-    '<iframe src="sw-mod/absensi/map.php?latitude=' +
+    '<iframe src="sw-mod/apel/map.php?latitude=' +
     latitude +
     "&longitude=" +
     longitude +

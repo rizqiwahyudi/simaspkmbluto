@@ -50,11 +50,27 @@ echo'<aside class="main-sidebar">
       if($mod =='izin'){echo'<li class="active">'; }else{echo'<li>';}
       echo'<a href="./izin"><i class="fa fa-files-o" aria-hidden="true"></i> <span>Data Izin</span></a></li>';
 
-      if($mod =='absensi'){echo'<li class="active">'; }else{echo'<li>';}
-      echo'<a href="./absensi"><i class="fa fa-list-alt" aria-hidden="true"></i> <span>Laporan Absensi</span></a></li>';
-
-      if($mod =='laporan-harian'){echo'<li class="active">'; }else{echo'<li>';}
-      echo'<a href="./laporan-harian"><i class="fa fa-list-alt" aria-hidden="true"></i> <span>Laporan Harian</span></a></li>';
+      if ($mod == 'absensi' OR $mod == 'laporan-harian' OR $mod == 'apel' OR $mod == 'laporan-apel-harian') {echo'<li class="active treeview">'; }else{
+        echo'<li class="treeview">';
+      }
+      echo'
+          <a href="#">
+            <i class="fa fa-list-alt"></i> <span>Laporan</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">';
+            if($mod =='absensi'){echo'<li class="active">'; }else{echo'<li>';}
+              echo'<a href="./absensi"><i class="fa fa-circle-o"></i> <span>Laporan Absensi</span></a></li>';
+            if($mod =='laporan-harian'){echo'<li class="active">'; }else{echo'<li>';}
+              echo'<a href="./laporan-harian"><i class="fa fa-circle-o" aria-hidden="true"></i> <span>Laporan Absensi Harian</span></a></li>';
+            if($mod =='apel'){echo'<li class="active">'; }else{echo'<li>';}
+              echo'<a href="./apel"><i class="fa fa-circle-o" aria-hidden="true"></i> <span>Laporan Apel</span></a></li>';
+            if($mod =='laporan-apel-harian'){echo'<li class="active">'; }else{echo'<li>';}
+              echo'<a href="./laporan-apel-harian"><i class="fa fa-circle-o" aria-hidden="true"></i> <span>Laporan Apel Harian</span></a></li>
+          </ul>
+        </li>';
 
       if($mod =='setting'){echo'<li class="active">'; }else{echo'<li>';}
       echo'<a href="./setting"><i class="fa fa-cogs" aria-hidden="true"></i> <span>Pengaturan Web</span></a></li>';
