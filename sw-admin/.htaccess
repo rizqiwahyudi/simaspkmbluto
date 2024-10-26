@@ -20,6 +20,8 @@ RewriteRule ^absensi/print$ sw-mod/absensi/print.php
 RewriteRule ^laporan-harian/print$ sw-mod/laporan-harian/print.php
 RewriteRule ^cuty/print$ sw-mod/cuty/print.php
 RewriteRule ^izin/print$ sw-mod/cuty/print.php
+RewriteRule ^apel/print$ sw-mod/apel/print.php
+RewriteRule ^laporan-apel-harian/print$ sw-mod/laporan-apel-harian/print.php
 
 
 RewriteCond %{REQUEST_FILENAME} !-f

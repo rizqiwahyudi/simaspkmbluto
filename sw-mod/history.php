@@ -113,6 +113,7 @@ if(!isset($_COOKIE['COOKIES_MEMBER']) && !isset($_COOKIE['COOKIES_COOKIES'])){
 
                             <form id="update-history">
                                 <input type="hidden" name="presence_id" id="presence_id" readonly>
+                                <input type="hidden" name="apel_id" id="apel_id" readonly>
 
                                 <!--<div class="form-group basic">
                                     <div class="input-wrapper">

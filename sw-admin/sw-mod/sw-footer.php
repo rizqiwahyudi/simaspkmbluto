@@ -43,7 +43,7 @@ if($mod =='shift' OR $mod=='libur' OR $mod=='jam-apel'){echo'
 <script src="./sw-assets/plugins/timepicker/bootstrap-timepicker.min.js"></script>';
 }
 
-if($mod=='absensi' OR $mod=='thema-card'){
+if($mod=='absensi' OR $mod=='apel' OR $mod=='thema-card'){
 echo'
 <script src="../sw-mod/sw-assets/js/plugins/magnific-popup/jquery.magnific-popup.min.js"></script>';
 }

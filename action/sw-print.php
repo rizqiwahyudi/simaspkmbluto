@@ -14,19 +14,31 @@ switch (@$_GET['action']){
 
 /* -------  CETAK PDF----------*/
 case 'pdf':
-$query ="SELECT employees.id,employees.employees_name,employees.position_id,position.position_name,shift.time_in,shift.time_out FROM employees,position,shift WHERE employees.position_id=position.position_id AND employees.shift_id=shift.shift_id AND employees.id='$row_user[id]'";
-$result = $connection->query($query);
+  $query ="SELECT employees.id,employees.employees_name,employees.position_id,position.position_name,shift.time_in,shift.time_out FROM employees,position,shift WHERE employees.position_id=position.position_id AND employees.shift_id=shift.shift_id AND employees.id='$row_user[id]'";
+  $result = $connection->query($query);
+
+  $query_jam_apel ="SELECT time_in FROM jam_apel LIMIT 1";
+  $result_jam_apel = $connection->query($query_jam_apel);
+  if ($result_jam_apel->num_rows > 0) {
+    $row_jam_apel = $result_jam_apel->fetch_assoc();
+  }else{
+    $row_jam_apel = array(['time_in'=>'08:30:00']);
+  }
+
   if($result->num_rows > 0){
   $row= $result->fetch_assoc();
   $shift_time_in  = $row['time_in'];
+  $apel_time_in  = $row_jam_apel['time_in'];
 	$shift_time_out  = $row['time_out'];
 if(isset($_GET['from']) OR isset($_GET['to'])){
       $from = date('Y-m-d', strtotime($_GET['from']));
       $to   = date('Y-m-d', strtotime($_GET['to']));
       $filter ="presence_date BETWEEN '$from' AND '$to'";
+      $filter_apel ="apel_date BETWEEN '$from' AND '$to'";
   } 
   else{
       $filter ="MONTH(presence_date) ='$month'";
+      $filter_apel ="MONTH(apel_date) ='$month'";
 }
 
 
@@ -55,7 +67,7 @@ echo'
     <section class="container_box">
       <div class="row">';
       if(isset($_GET['from']) OR isset($_GET['to'])){
-         echo'<h3>DATA ABSENSI "'.$employees_name.'" PER TANGGAl '.tanggal_ind($from).' S/D '.tanggal_ind($to).'</h3>';}
+         echo'<h3>DATA ABSENSI "'.$employees_name.'" PER TANGGAL '.tanggal_ind($from).' S/D '.tanggal_ind($to).'</h3>';}
         else{
         echo'<h3>DATA ABSENSI "'.$employees_name.'" BULAN '.tanggal_indo($month_en).' '.$year.'</h3>';
         }
@@ -66,6 +78,7 @@ echo'
             <tr>
               <th class="text-center">No.</th>
               <th>Tanggal</th>
+              <th>Waktu Apel</th>
               <th>Waktu Masuk</th>
               <th>Waktu Pulang</th>
               <th>Status</th>
@@ -74,7 +87,39 @@ echo'
           </thead>
         <tbody>';
 
-    $query_absen ="SELECT presence_id,presence_date,time_in,time_out,present_id, latitude_longtitude_in,information,TIMEDIFF(TIME(time_in),'$shift_time_in') AS selisih,if (time_in>'$shift_time_in','Telat',if(time_in='00:00:00','Tidak Masuk','Tepat Waktu')) AS status, if (time_out<'$shift_time_out','Pulang Cepat','Tepat Waktu') AS status_pulang FROM presence WHERE employees_id='$row_user[id]' AND $filter ORDER BY presence_id ASC";
+    $query_absen ="SELECT 
+    presence.presence_id AS presence_id,
+    presence.presence_date AS presence_date,
+    presence.time_in AS time_in,
+    presence.time_out AS time_out,
+    presence.present_id AS present_id,
+    presence.latitude_longtitude_in AS latitude_longtitude_in,
+    presence.information AS information,
+    apel.apel_date AS apel_date,
+    apel.time_in AS apel_in,
+    apel.apel_id AS apel_id,
+    TIMEDIFF(TIME(presence.time_in), '$shift_time_in') AS selisih,
+    IF(presence.time_in > '$shift_time_in', 'Telat', IF(presence.time_in = '00:00:00', 'Tidak Masuk', 'Tepat Waktu')) AS status,
+    IF(presence.time_out < '$shift_time_out', 'Pulang Cepat', 'Tepat Waktu') AS status_pulang,
+    IF(
+        apel.time_in > '$jam_apel_time_in',
+        'Telat',
+        IF(
+            apel.time_in = '00:00:00',
+            'Tidak Apel',
+            'Tepat Waktu'
+        )
+    ) AS status_apel
+FROM 
+    presence
+LEFT JOIN 
+    apel ON apel.employees_id = presence.employees_id AND apel.apel_date = presence.presence_date
+WHERE 
+    presence.employees_id = '$row_user[id]' 
+    AND $filter 
+ORDER BY 
+    presence.presence_id ASC
+";
     $result_absen = $connection->query($query_absen);
     if($result_absen->num_rows > 0){
     while ($row_absen= $result_absen->fetch_assoc()) {
@@ -98,6 +143,16 @@ echo'
           $status_time_in ='';
         }
 
+        if($row_absen['status_apel']=='Telat'){
+          $status_time_in_apel =' <span class="badge badge-danger">'.$row_absen['status_apel'].'</span>';
+        }
+          elseif ($row_absen['status_apel']=='Tepat Waktu') {
+          $status_time_in_apel =' <span class="badge badge-success">'.$row_absen['status_apel'].'</span>';
+        }
+        else{
+          $status_time_in_apel ='';
+        }
+
         if($row_absen['status_pulang']=='Pulang Cepat'){
           $status_pulang='<span class="badge badge-danger">'.$row_absen['status_pulang'].'</span>';
         }
@@ -109,6 +164,7 @@ echo'
        echo'<tr>
               <td class="text-center">'.$no.'</td>
               <td>'.tanggal_indo($row_absen['presence_date'], true).'</td>
+              <td>'.$row_absen['apel_in'].' '.$status_time_in_apel.'</td>
               <td>'.$row_absen['time_in'].' '.$status_time_in.'</td>
               <td>'.$row_absen['time_out'].' '.$status_pulang.'</td>
               <td>'.$row_aa['present_name'].'</td>
@@ -125,6 +181,9 @@ echo'
       $query_hadir="SELECT presence_id FROM presence WHERE employees_id='$row_user[id]' AND $filter AND present_id='1' ORDER BY presence_id DESC";
       $hadir= $connection->query($query_hadir);
 
+      $query_hadir_apel="SELECT apel_id FROM apel WHERE employees_id='$row_user[id]' AND $filter_apel AND `status`='1' ORDER BY apel_id DESC";
+      $hadir_apel= $connection->query($query_hadir_apel);
+
       $query_sakit="SELECT presence_id FROM presence WHERE employees_id='$row_user[id]' AND $filter AND present_id='2' ORDER BY presence_id";
       $sakit = $connection->query($query_sakit);
 
@@ -134,11 +193,16 @@ echo'
       $query_telat ="SELECT presence_id FROM presence WHERE employees_id='$row_user[id]' AND $filter AND time_in>'$shift_time_in'";
       $telat = $connection->query($query_telat);
 
+      $query_telat_apel ="SELECT apel_id FROM apel WHERE employees_id='$row_user[id]' AND $filter_apel AND time_in>'$apel_time_in'";
+      $telat_apel = $connection->query($query_telat_apel);
+
       $query_pulang ="SELECT presence_id FROM presence WHERE employees_id='$row_user[id]' AND $filter AND time_out<'$shift_time_out'";
       $pulang = $connection->query($query_pulang);
       echo'
       <p>Hadir : <span class="badge badge-success">'.$hadir->num_rows.'</span></p>
+      <p>Hadir Apel : <span class="badge badge-success">'.$hadir_apel->num_rows.'</span></p>
       <p>Telat : <span class="label badge badge-danger">'.$telat->num_rows.'</span></p>
+      <p>Telat Apel : <span class="label badge badge-danger">'.$telat_apel->num_rows.'</span></p>
       <p>Pulang Cepat : <span class="badge badge-danger">'.$pulang->num_rows.'</span></p>
       <p>Sakit : <span class="badge badge-warning">'.$sakit->num_rows.'</span></p>
       <p>Izin : <span class="badge badge-info">'.$izin->num_rows.'</span></p>
@@ -161,18 +225,29 @@ case 'excel':
 $query ="SELECT employees.id,employees.employees_name,employees.position_id,position.position_name,shift.time_in,shift.time_out FROM employees,position,shift WHERE employees.position_id=position.position_id AND employees.shift_id=shift.shift_id AND employees.id='$row_user[id]'";
 $result = $connection->query($query);
 
+$query_jam_apel ="SELECT time_in FROM jam_apel LIMIT 1";
+  $result_jam_apel = $connection->query($query_jam_apel);
+  if ($result_jam_apel->num_rows > 0) {
+    $row_jam_apel = $result_jam_apel->fetch_assoc();
+  }else{
+    $row_jam_apel = array(['time_in'=>'08:30:00']);
+  }
+
   if($result->num_rows > 0){
   $row= $result->fetch_assoc();
   $shift_time_in  = $row['time_in'];
+  $apel_time_in  = $row_jam_apel['time_in'];
   $shift_time_out  = $row['time_out'];
 
   if(isset($_GET['from']) OR isset($_GET['to'])){
         $from = date('Y-m-d', strtotime($_GET['from']));
         $to   = date('Y-m-d', strtotime($_GET['to']));
         $filter ="presence_date BETWEEN '$from' AND '$to'";
+        $filter_apel ="apel_date BETWEEN '$from' AND '$to'";
     } 
     else{
         $filter ="MONTH(presence_date) ='$month'";
+        $filter_apel ="MONTH(apel_date) ='$month'";
   }
 
    header("Content-type: application/vnd-ms-excel");
@@ -193,7 +268,7 @@ echo'
     <section class="container_box">
       <div class="row">';
       if(isset($_GET['from']) OR isset($_GET['to'])){
-        echo'<h3>DATA ABSENSI "'.$employees_name.'" PER TANGGAl '.tanggal_ind($from).' S/D '.tanggal_ind($to).'</h3>';}
+        echo'<h3>DATA ABSENSI "'.$employees_name.'" PER TANGGAL '.tanggal_ind($from).' S/D '.tanggal_ind($to).'</h3>';}
       else{
          echo'<h3>DATA ABSENSI "'.$employees_name.'" BULAN '.tanggal_indo($month_en).' '.$year.'</h3>';
       }
@@ -204,6 +279,7 @@ echo'
             <tr>
               <th class="text-center">No.</th>
               <th>Tanggal</th>
+              <th>Waktu Apel</th>
               <th>Waktu Masuk</th>
               <th>Waktu Pulang</th>
               <th>Status</th>
@@ -212,7 +288,38 @@ echo'
           </thead>
         <tbody>';
         $no=0;
-    $query_absen ="SELECT presence_id,presence_date,time_in,time_out,present_id, latitude_longtitude_in,information,TIMEDIFF(TIME(time_in),'$shift_time_in') AS selisih,if (time_in>'$shift_time_in','Telat',if(time_in='00:00:00','Tidak Masuk','Tepat Waktu')) AS status, if (time_out<'$shift_time_out','Pulang Cepat','Tepat Waktu') AS status_pulang FROM  presence WHERE employees_id='$row_user[id]' AND $filter ORDER BY presence_id ASC";
+    $query_absen ="SELECT 
+    presence.presence_id AS presence_id,
+    presence.presence_date AS presence_date,
+    presence.time_in AS time_in,
+    presence.time_out AS time_out,
+    presence.present_id AS present_id,
+    presence.latitude_longtitude_in AS latitude_longtitude_in,
+    presence.information AS information,
+    apel.apel_date AS apel_date,
+    apel.time_in AS apel_in,
+    apel.apel_id AS apel_id,
+    TIMEDIFF(TIME(presence.time_in), '$shift_time_in') AS selisih,
+    IF(presence.time_in > '$shift_time_in', 'Telat', IF(presence.time_in = '00:00:00', 'Tidak Masuk', 'Tepat Waktu')) AS status,
+    IF(presence.time_out < '$shift_time_out', 'Pulang Cepat', 'Tepat Waktu') AS status_pulang,
+    IF(
+        apel.time_in > '$jam_apel_time_in',
+        'Telat',
+        IF(
+            apel.time_in = '00:00:00',
+            'Tidak Apel',
+            'Tepat Waktu'
+        )
+    ) AS status_apel
+FROM 
+    presence
+LEFT JOIN 
+    apel ON apel.employees_id = presence.employees_id AND apel.apel_date = presence.presence_date
+WHERE 
+    presence.employees_id = '$row_user[id]' 
+    AND $filter 
+ORDER BY 
+    presence.presence_id ASC";
     $result_absen = $connection->query($query_absen);
     if($result_absen->num_rows > 0){
     while ($row_absen= $result_absen->fetch_assoc()) {
@@ -236,6 +343,16 @@ echo'
           $status_time_in ='';
         }
 
+        if($row_absen['status_apel']=='Telat'){
+          $status_time_in_apel =' <span class="badge badge-danger">'.$row_absen['status_apel'].'</span>';
+        }
+          elseif ($row_absen['status_apel']=='Tepat Waktu') {
+          $status_time_in_apel =' <span class="badge badge-success">'.$row_absen['status_apel'].'</span>';
+        }
+        else{
+          $status_time_in_apel ='';
+        }
+
         if($row_absen['status_pulang']=='Pulang Cepat'){
           $status_pulang='<span class="badge badge-danger">'.$row_absen['status_pulang'].'</span>';
         }
@@ -246,6 +363,7 @@ echo'
         echo'<tr>
               <td class="text-center">'.$no.'</td>
               <td>'.tanggal_indo($row_absen['presence_date'], true).'</td>
+              <td>'.$row_absen['apel_in'].' '.$status_time_in_apel.'</td>
               <td>'.$row_absen['time_in'].' '.$status_time_in.'</td>
               <td>'.$row_absen['time_out'].' '. $status_pulang.'</td>
               <td>'.$row_aa['present_name'].'</td>
@@ -261,6 +379,9 @@ echo'
       $query_hadir="SELECT presence_id FROM presence WHERE employees_id='$row_user[id]' AND $filter AND present_id='1' ORDER BY presence_id DESC";
       $hadir= $connection->query($query_hadir);
 
+      $query_hadir_apel="SELECT apel_id FROM apel WHERE employees_id='$row_user[id]' AND $filter_apel AND `status`='1' ORDER BY apel_id DESC";
+      $hadir_apel= $connection->query($query_hadir_apel);
+
       $query_sakit="SELECT presence_id FROM presence WHERE employees_id='$row_user[id]' AND $filter AND present_id='2' ORDER BY presence_id";
       $sakit = $connection->query($query_sakit);
 
@@ -270,11 +391,16 @@ echo'
       $query_telat ="SELECT presence_id FROM presence WHERE employees_id='$row_user[id]' AND $filter AND time_in>'$shift_time_in'";
       $telat = $connection->query($query_telat);
 
+      $query_telat_apel ="SELECT apel_id FROM apel WHERE employees_id='$row_user[id]' AND $filter_apel AND time_in>'$apel_time_in'";
+      $telat_apel = $connection->query($query_telat_apel);
+
       $query_pulang ="SELECT presence_id FROM presence WHERE employees_id='$row_user[id]' AND $filter AND time_out<'$shift_time_out'";
       $pulang = $connection->query($query_pulang);
       echo'
       <p>Hadir : <span class="badge badge-success">'.$hadir->num_rows.'</span></p>
+      <p>Hadir Apel : <span class="badge badge-success">'.$hadir_apel->num_rows.'</span></p>
       <p>Telat : <span class="label badge badge-danger">'.$telat->num_rows.'</span></p>
+      <p>Telat Apel : <span class="label badge badge-danger">'.$telat_apel->num_rows.'</span></p>
       <p>Pulang Cepat : <span class="badge badge-danger">'.$pulang->num_rows.'</span></p>
       <p>Sakit : <span class="badge badge-warning">'.$sakit->num_rows.'</span></p>
       <p>Izin : <span class="badge badge-info">'.$izin->num_rows.'</span></p>
